@@ -3,6 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 load_dotenv(find_dotenv())
 TOKEN = os.getenv("TOKEN")
@@ -13,12 +14,18 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def start_cmd(message: types.Message):
-    await message.answer("Это была команда старт!")
+    await message.answer("Этот quiz по географии пишите всё с маленькой буквы:\
+                         Первый вопрос: Столица Аргентины?")
 
 
 @dp.message()
-async def echo(message: types.Message):
-    await message.answer(message.text)
+async def convers(message: types.Message):
+    if message.text == "буэнос-айрес":
+        await message.answer("Правильно")
+    elif message.text == "Буэнос Айрес":
+        await message.answer("Я же просил")
+    else:
+        await message.answer("Не правильно")
 
 
 async def main():
