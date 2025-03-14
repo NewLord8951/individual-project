@@ -11,6 +11,7 @@ from random import choice
 
 load_dotenv(find_dotenv())
 TOKEN = os.getenv("TOKEN")
+CHANNAL_ID = os.getenv("CHANNAL_ID")
 
 
 async def main():
@@ -25,26 +26,40 @@ async def main():
     dp = Dispatcher()
     logger.info("Диспетчер создан")
 
+    async def send_random_joke():
+        while True:
+            try:
+                response = \
+                    requests.get('https://www.anekdot.ru/random/anekdot/')
+                if response.status_code == 200:
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    jokes = soup.find_all('div', class_='text')
+
+                    random_joke = choice(jokes).text.strip()
+                    anekdot = random_joke
+                else:
+                    anekdot = "Не удалось получить анекдот"
+
+                await bot.send_message(CHANNAL_ID, f"Анекдот: {anekdot}")
+                logger.info(f"Опублекован анекдот: {anekdot}")
+            except Exception as e:
+                logger.error(f"Ошибка при отправке сообщения {e}")
+
+            await asyncio.sleep(30)
+
     @dp.message(Command("start"))
     async def send_welcome(message: types.Message):
-        await message.answer("Привет! Получи анекдот по команде: /anekdot")
+        await message.answer("Бот запущен! Он будет отправлять анекдоты!")
         logger.info("Бот запущен")
 
-    @dp.message(Command('anekdot'))
-    async def send_anekdot(message: types.Message):
-        response = requests.get('https://www.anekdot.ru/random/anekdot/')
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            jokes = soup.find_all('div', class_='text')
+    task = asyncio.create_task(send_random_joke())
 
-            random_joke = choice(jokes).text.strip()
-            anekdot = random_joke
-        else:
-            anekdot = "Не удалось получить анекдот"
-
-        await message.answer(anekdot)
-
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        task.cancel()
+        await bot.session.close()
+        logger.info("Бот остановлен")
 
 if __name__ == '__main__':
     asyncio.run(main())
