@@ -10,7 +10,8 @@ def get_keyboard(
     sizes: tuple[int] = (2,),
 ):
     '''
-    Parameters request_contact and request_location must be as indexes of btns args for buttons you need.
+    Parameters request_contact and request_location\
+          must be as indexes of btns args for buttons you need.
     Example:
     get_keyboard(
             "Меню",
