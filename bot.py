@@ -1,65 +1,53 @@
 import os
 import asyncio
-from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-import requests
-from bs4 import BeautifulSoup
-from random import choice
-
+from aiogram.filters import CommandStart
+from dotenv import find_dotenv, load_dotenv
+from reply import get_keyboard
 
 load_dotenv(find_dotenv())
-TOKEN = os.getenv("TOKEN")
-CHANNAL_ID = os.getenv("CHANNAL_ID")
+
+bot = Bot(token=os.getenv('TOKEN'))
+dp = Dispatcher()
+
+
+@dp.message(CommandStart())
+async def cmd_start(message: types.Message):
+    await message.answer('Напиши сюда свой текст')
+    logger.info('Бот запущен')
+    await message.answer(
+        "сюда тоже",
+        reply_markup=get_keyboard(
+            "твой вопрос",
+            "твой вопрос",
+            "твой вопрос",
+            "твой вопрос",
+            placeholder="",
+            sizes=(2, 2)
+        ),
+    )
+
+
+@dp.message()
+async def echo(message: types.Message):
+    text = message.text
+
+    if text in ['Привет', 'привет', 'hi', 'hello']:
+        await message.answer('И тебе привет!')
+    elif text in ['Пока', 'пока', 'До свидания']:
+        await message.answer('И тебе пока!')
+    else:
+        await message.answer(message.text)
 
 
 async def main():
-    logger.add("file.log",
-               format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
-               rotation="3 days",
+    logger.add('file.log',
+               format='{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}',
+               rotation='3 days',
                backtrace=True,
                diagnose=True)
+    logger.info('Бот запущен')
+    await dp.start_polling(bot)
 
-    bot = Bot(token=TOKEN)
-    logger.info("Бот создан")
-    dp = Dispatcher()
-    logger.info("Диспетчер создан")
-
-    async def send_random_joke():
-        while True:
-            try:
-                response = \
-                    requests.get('https://www.anekdot.ru/random/anekdot/')
-                if response.status_code == 200:
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    jokes = soup.find_all('div', class_='text')
-
-                    random_joke = choice(jokes).text.strip()
-                    anekdot = random_joke
-                else:
-                    anekdot = "Не удалось получить анекдот"
-
-                await bot.send_message(CHANNAL_ID, f"Анекдот: {anekdot}")
-                logger.info(f"Опублекован анекдот: {anekdot}")
-            except Exception as e:
-                logger.error(f"Ошибка при отправке сообщения {e}")
-
-            await asyncio.sleep(30)
-
-    @dp.message(Command("start"))
-    async def send_welcome(message: types.Message):
-        await message.answer("Бот запущен! Он будет отправлять анекдоты!")
-        logger.info("Бот запущен")
-
-    task = asyncio.create_task(send_random_joke())
-
-    try:
-        await dp.start_polling(bot)
-    finally:
-        task.cancel()
-        await bot.session.close()
-        logger.info("Бот остановлен")
-
-if __name__ == '__main__':
-    asyncio.run(main())
+asyncio.run(main())
