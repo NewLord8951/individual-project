@@ -36,8 +36,7 @@ async def eсho(message: types.Message):
     if text in ["a", "b", "c", "d"]:
         await message.answer('ага')
         await message.answer(
-            "Вы выбрали: {}.\
-                  Теперь выберите один из следующих вариантов:".format(text),
+            "Следующий вопрос гугугага?",
             reply_markup=get_keyboard(
                 "1",
                 "2",
