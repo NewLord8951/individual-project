@@ -33,13 +33,13 @@ async def cmd_start(message: types.Message):
 async def echo(message: types.Message):
     text = message.text
 
-    if text in ["a"]:
+    if text in ["q"]:
         await message.answer('ага')
-    elif text in ['b']:
+    elif text in ['w']:
         await message.answer('ага')
-    elif text in ['c']:
+    elif text in ['e']:
         await message.answer('ага')
-    elif text in ['d']:
+    elif text in ['r']:
         await message.answer('ага')
     else:
         await message.answer(message.text)
