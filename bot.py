@@ -33,7 +33,7 @@ async def cmd_start(message: types.Message):
 async def q0(message: types.Message):
     text = message.text
 
-    if text in ["a0" or "b0" or "c0" or "d0"]:
+    if text in ["a0", "b0", "c0", "d0"]:
         await message.answer('ага')
         logger.info('Вопрос 1 написан')
         await message.answer(
@@ -51,7 +51,7 @@ async def q0(message: types.Message):
         await message.answer("Что это??? Символы???")
 
 
-@dp.message()
+@dp.message(q0)
 async def q1(message: types.Message):
     text1 = message.text
 
@@ -73,7 +73,7 @@ async def q1(message: types.Message):
         await message.answer("Что это??? Символы???")
 
 
-@dp.message()
+@dp.message(q1)
 async def q2(message: types.Message):
     text2 = message.text
 
