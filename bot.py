@@ -35,6 +35,7 @@ async def q0(message: types.Message):
 
     if text in ["a0", "b0", "c0", "d0"]:
         await message.answer('ага')
+        logger.info('Вопрос 1 написан')
         await message.answer(
             "Следующий вопрос гугугага?",
             reply_markup=get_keyboard(
@@ -56,6 +57,7 @@ async def q1(message: types.Message):
 
     if text1 in ["a1", "b1", "c1", "d1", "ага"]:
         await message.answer('ага ясно')
+        logger.info('Вопрос 2 написан')
         await message.answer(
             "Следующий вопрос дадада??",
             reply_markup=get_keyboard(
@@ -85,6 +87,7 @@ async def q2(message: types.Message):
         await message.answer('агась')
     else:
         await message.answer("Что это??? Символы???")
+    logger.info('Вопрос 3 написан')
 
 
 async def main():
