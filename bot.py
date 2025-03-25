@@ -14,15 +14,15 @@ dp = Dispatcher()
 
 @dp.message(CommandStart())
 async def cmd_start(message: types.Message):
-    await message.answer('Напиши сюда свой текст')
+    await message.answer('Здравствуйте! Бот запущен.')
     logger.info('Бот запущен')
     await message.answer(
-        "сюда тоже",
+        "Первый вопрос: блблблблб?",
         reply_markup=get_keyboard(
-            "твой вопрос",
-            "твой вопрос",
-            "твой вопрос",
-            "твой вопрос",
+            "a",
+            "b",
+            "c",
+            "d",
             placeholder="",
             sizes=(2, 2)
         ),
@@ -33,10 +33,14 @@ async def cmd_start(message: types.Message):
 async def echo(message: types.Message):
     text = message.text
 
-    if text in ['Привет', 'привет', 'hi', 'hello']:
-        await message.answer('И тебе привет!')
-    elif text in ['Пока', 'пока', 'До свидания']:
-        await message.answer('И тебе пока!')
+    if text in ["a"]:
+        await message.answer('ага')
+    elif text in ['b']:
+        await message.answer('ага')
+    elif text in ['c']:
+        await message.answer('ага')
+    elif text in ['d']:
+        await message.answer('ага')
     else:
         await message.answer(message.text)
 
