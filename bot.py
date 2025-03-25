@@ -51,7 +51,7 @@ async def q0(message: types.Message):
         await message.answer("Что это??? Символы???")
 
 
-@dp.message(q0)
+@dp.message()
 async def q1(message: types.Message):
     text1 = message.text
 
@@ -73,7 +73,7 @@ async def q1(message: types.Message):
         await message.answer("Что это??? Символы???")
 
 
-@dp.message(q1)
+@dp.message()
 async def q2(message: types.Message):
     text2 = message.text
 
