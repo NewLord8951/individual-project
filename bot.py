@@ -47,8 +47,6 @@ async def q0(message: types.Message):
                 sizes=(2, 2)
             ),
         )
-    else:
-        await message.answer("Что это??? Символы???")
 
 
 @dp.message()
