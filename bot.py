@@ -50,7 +50,7 @@ async def q0(message: types.Message):
         await message.answer("Что это??? Символы???")
 
 
-@dp.message()
+@dp.message_handler()
 async def q1(message: types.Message):
     text1 = message.text
     if text1 in ["a1", "b1", "c1", "d1"]:
