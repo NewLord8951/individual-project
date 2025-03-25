@@ -45,6 +45,28 @@ async def echo(message: types.Message):
         await message.answer("Что это??? Слова!?")
 
 
+@dp.message()
+async def eho(message: types.Message):
+    text = message.text
+
+    if text in ["a", "b", "c", "d"]:
+        await message.answer('ага')
+        await message.answer(
+            "Вы выбрали: {}.\
+                  Теперь выберите один из следующих вариантов:".format(text),
+            reply_markup=get_keyboard(
+                "1",
+                "2",
+                "3",
+                "4",
+                placeholder="",
+                sizes=(2, 2)
+            ),
+        )
+    else:
+        await message.answer("Что это??? Слова!?")
+
+
 async def main():
     logger.add('file.log',
                format='{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}',
