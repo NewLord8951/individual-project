@@ -53,9 +53,9 @@ async def q0(message: types.Message):
 
 @dp.message()
 async def q1(message: types.Message):
-    text1 = q0
+    text1 = message.text
 
-    if text1 in ["a1", "b1", "c1", "d1", "ага"]:
+    if text1 in ["a1", "b1", "c1", "d1"]:
         await message.answer('ага ясно')
         logger.info('Вопрос 2 написан')
         await message.answer(
@@ -75,7 +75,7 @@ async def q1(message: types.Message):
 
 @dp.message()
 async def q2(message: types.Message):
-    text2 = q1
+    text2 = message.text
 
     if text2 in ["a2"]:
         await message.answer('агась')
