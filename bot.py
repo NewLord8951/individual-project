@@ -31,7 +31,7 @@ async def cmd_start(message: types.Message):
 
 @dp.message()
 async def q0(message: types.Message):
-    text = message.text
+    text = cmd_start
 
     if text in ["a0", "b0", "c0", "d0"]:
         await message.answer('ага')
@@ -52,7 +52,7 @@ async def q0(message: types.Message):
 
 @dp.message()
 async def q1(message: types.Message):
-    text1 = message.text
+    text1 = q0
 
     if text1 in ["a1", "b1", "c1", "d1"]:
         await message.answer('ага ясно')
@@ -73,7 +73,7 @@ async def q1(message: types.Message):
 
 @dp.message()
 async def q2(message: types.Message):
-    text2 = message.text
+    text2 = q1
 
     if text2 in ["a2"]:
         await message.answer('агась')
