@@ -52,9 +52,9 @@ async def q0(message: types.Message):
 
 @dp.message()
 async def q1(message: types.Message):
-    text = message.text
+    text1 = message.text
 
-    if text in ["a1", "b1", "c1", "d1"]:
+    if text1 in ["a1", "b1", "c1", "d1"]:
         await message.answer('ага ясно')
         await message.answer(
             "Следующий вопрос дадада??",
@@ -73,15 +73,15 @@ async def q1(message: types.Message):
 
 @dp.message()
 async def q2(message: types.Message):
-    text = message.text
+    text2 = message.text
 
-    if text in ["a2"]:
+    if text2 in ["a2"]:
         await message.answer('агась')
-    elif text in ["b2"]:
+    elif text2 in ["b2"]:
         await message.answer('агась')
-    elif text in ["c2"]:
+    elif text2 in ["c2"]:
         await message.answer('агась')
-    elif text in ["d2"]:
+    elif text2 in ["d2"]:
         await message.answer('агась')
     else:
         await message.answer("Что это??? Символы???")
