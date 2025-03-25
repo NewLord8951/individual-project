@@ -30,23 +30,7 @@ async def cmd_start(message: types.Message):
 
 
 @dp.message()
-async def echo(message: types.Message):
-    text = message.text
-
-    if text in ["a"]:
-        await message.answer('ага')
-    elif text in ["b"]:
-        await message.answer('ага')
-    elif text in ["c"]:
-        await message.answer('ага')
-    elif text in ["d"]:
-        await message.answer('ага')
-    else:
-        await message.answer("Что это??? Слова!?")
-
-
-@dp.message()
-async def eho(message: types.Message):
+async def eсho(message: types.Message):
     text = message.text
 
     if text in ["a", "b", "c", "d"]:
@@ -64,7 +48,7 @@ async def eho(message: types.Message):
             ),
         )
     else:
-        await message.answer("Что это??? Слова!?")
+        await message.answer("Что это??? Символы???")
 
 
 async def main():
