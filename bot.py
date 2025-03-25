@@ -19,10 +19,10 @@ async def cmd_start(message: types.Message):
     await message.answer(
         "Первый вопрос: блблблблб?",
         reply_markup=get_keyboard(
-            "a",
-            "b",
-            "c",
-            "d",
+            "a0",
+            "b0",
+            "c0",
+            "d0",
             placeholder="",
             sizes=(2, 2)
         ),
@@ -30,22 +30,59 @@ async def cmd_start(message: types.Message):
 
 
 @dp.message()
-async def eсho(message: types.Message):
+async def q0(message: types.Message):
     text = message.text
 
-    if text in ["a", "b", "c", "d"]:
+    if text in ["a0", "b0", "c0", "d0"]:
         await message.answer('ага')
         await message.answer(
             "Следующий вопрос гугугага?",
             reply_markup=get_keyboard(
-                "1",
-                "2",
-                "3",
-                "4",
+                "a1",
+                "b1",
+                "c1",
+                "d1",
                 placeholder="",
                 sizes=(2, 2)
             ),
         )
+    else:
+        await message.answer("Что это??? Символы???")
+
+
+@dp.message()
+async def q1(message: types.Message):
+    text = message.text
+
+    if text in ["a1", "b1", "c1", "d1"]:
+        await message.answer('ага ясно')
+        await message.answer(
+            "Следующий вопрос дадада??",
+            reply_markup=get_keyboard(
+                "a2",
+                "b2",
+                "c2",
+                "d2",
+                placeholder="",
+                sizes=(2, 2)
+            ),
+        )
+    else:
+        await message.answer("Что это??? Символы???")
+
+
+@dp.message()
+async def q2(message: types.Message):
+    text = message.text
+
+    if text in ["a2"]:
+        await message.answer('агась')
+    elif text in ["b2"]:
+        await message.answer('агась')
+    elif text in ["c2"]:
+        await message.answer('агась')
+    elif text in ["d2"]:
+        await message.answer('агась')
     else:
         await message.answer("Что это??? Символы???")
 
