@@ -1,1 +1,1 @@
-print("Qewert1i")
+# "Qewert1i"
