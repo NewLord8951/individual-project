@@ -53,7 +53,7 @@ async def q0(message: types.Message):
 
 @dp.message()
 async def q1(message: types.Message):
-    text1 = ["a1", "b1", "c1", "d1"]
+    text1 = message.answer
 
     if text1 in ["a1", "b1", "c1", "d1"]:
         await message.answer('ага ясно')
