@@ -14,11 +14,11 @@ def get_keyboard(
           must be as indexes of btns args for buttons you need.
     Example:
     get_keyboard(
-            "Меню",
-            "О магазине",
-            "Варианты оплаты",
-            "Варианты доставки",
-            "Отправить номер телефона"
+            "a",
+            "b",
+            "c",
+            "d",
+            "e"
             placeholder="Что вас интересует?",
             request_contact=4,
             sizes=(2, 2, 1)
