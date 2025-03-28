@@ -31,7 +31,7 @@ async def cmd_start(message: types.Message):
 
 @dp.message()
 async def q0(message: types.Message):
-    text = ["a0", "b0", "c0", "d0"]
+    text = message.text
 
     if text in ["a0", "b0", "c0", "d0"]:
         await message.answer('ага')
