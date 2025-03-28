@@ -6,10 +6,13 @@ from aiogram.filters import CommandStart
 from dotenv import find_dotenv, load_dotenv
 from reply import get_keyboard
 
+from group_chat import group_quiz
+
 load_dotenv(find_dotenv())
 
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher()
+group_quiz(dp)
 
 user_states = {}
 scores = {}
