@@ -1,7 +1,7 @@
 import os
 import asyncio
 from loguru import logger
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Bot, Dispatcher
 from dotenv import find_dotenv, load_dotenv
 from private_chat import p_c
 from group_chat import group_quiz
@@ -15,7 +15,6 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")
 p_c(dp)
 group_quiz(dp)
 channel_joke(dp)
-executor.start_polling(dp)
 
 
 async def main():
