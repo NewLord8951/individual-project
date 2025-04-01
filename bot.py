@@ -5,15 +5,16 @@ from aiogram import Bot, Dispatcher
 from dotenv import find_dotenv, load_dotenv
 from private_chat import p_c
 from group_chat import group_quiz
-
+from channel import channel_joke
 load_dotenv(find_dotenv())
 
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher()
-
+CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 p_c(dp)
 group_quiz(dp)
+channel_joke(dp)
 
 
 async def main():
