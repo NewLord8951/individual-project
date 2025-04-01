@@ -10,7 +10,7 @@ logger.add("file_{time}.log")
 
 
 def channel_joke(dp: Dispatcher):
-    @dp.message(Command('a'), F.chat.type.in_({"channel"}))
+    @dp.message(Command('start'), F.chat.type.in_({"channel"}))
     async def send_random_joke(message: types.Message):
         while True:
             try:
