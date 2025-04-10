@@ -1,6 +1,6 @@
 import random
 from aiogram import Dispatcher, types, F
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 from loguru import logger
 
 group_games = {}
@@ -9,7 +9,7 @@ logger.add("file_{time}.log")
 
 
 def group_quiz(dp: Dispatcher):
-    @dp.message(Command('start_game'), F.chat.type.in_({
+    @dp.message(CommandStart(), F.chat.type.in_({
         "group", "supergroup"}))
     async def start_game(message: types.Message):
         chat_id = message.chat.id
