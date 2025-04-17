@@ -1,5 +1,5 @@
+import aiohttp
 import asyncio
-import requests
 from bs4 import BeautifulSoup
 from random import choice
 from aiogram import Bot, Dispatcher, types, F
@@ -15,15 +15,20 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")
 async def send_news(bot: Bot):
     while True:
         try:
-            response = requests.get("https://www.rbc.ru/")
-            if response.ok:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                news = soup.find_all('div', class_='main__feel__title')
-                new = choice(news).text.strip()
-                await bot.send_message(CHANNEL_ID, f"Новость:\n{new}")
-                logger.success("Канал: новость отправлена")
-            else:
-                logger.warning("Канал: проблема с сайтом новостей")
+            async with aiohttp.ClientSession() as session:
+                async with session.get("https://www.rbc.ru/") as response:
+                    if response.status == 200:
+                        text = await response.text()
+                        soup = BeautifulSoup(text, "html.parser")
+                        news = soup.find_all("span", class_="main__feed__title-wrap")
+                        if news:
+                            new_0 = choice(news).text.strip()
+                            await bot.send_message(CHANNEL_ID, f"Новость:\n{new_0}")
+                            logger.success("Канал: новость отправлена")
+                        else:
+                            logger.warning("Канал: новости не найдены на странице")
+                    else:
+                        logger.warning(f"Канал: проблема с сайтом новостей, статус {response.status}")
         except Exception as e:
             logger.error(f"Канал: ошибка {e}")
 
