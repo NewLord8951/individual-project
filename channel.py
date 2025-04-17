@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
 from bs4 import BeautifulSoup
-from random import choice
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from loguru import logger
@@ -22,7 +21,7 @@ async def send_news(bot: Bot):
                         soup = BeautifulSoup(text, "html.parser")
                         news = soup.find_all("span", class_="main__feed__title-wrap")
                         if news:
-                            new_0 = choice(news).text.strip()
+                            new_0 = [i.text + "\n" for i in news]
                             await bot.send_message(CHANNEL_ID, f"Новость:\n{new_0}")
                             logger.success("Канал: новость отправлена")
                         else:
