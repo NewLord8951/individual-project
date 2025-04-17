@@ -23,21 +23,28 @@ async def send_news(bot: Bot):
                         if response.status == 200:
                             text = await response.text()
                             soup = BeautifulSoup(text, "html.parser")
-                            news_spans = soup.find_all("span", class_="main__feed__title-wrap")
-                            news_list = [i.text.strip() for i in news_spans if i.text.strip()]
+                            news_spans = soup.find_all(
+                                "span", class_="main__feed__title-wrap")
+                            news_list = [
+                                i.text.strip(
+                                ) for i in news_spans if i.text.strip()]
                             index = 0
                             if not news_list:
-                                logger.warning("Канал: новости не найдены на странице")
+                                logger.warning(
+                                    "Канал: новости не найдены на странице")
                                 await asyncio.sleep(100)
                                 continue
                         else:
-                            logger.warning(f"Канал: проблема с сайтом новостей, статус {response.status}")
+                            logger.warning(
+                                f"Канал: проблема с сайтом новостей, статус\
+                                      {response.status}")
                             await asyncio.sleep(100)
                             continue
 
             current_news = news_list[index]
             await bot.send_message(CHANNEL_ID, f"Новость:\n{current_news}")
-            logger.success(f"Канал: новость отправлена ({index + 1}/{len(news_list)})")
+            logger.success(
+                f"Канал: новость отправлена ({index + 1}/{len(news_list)})")
 
             index += 1
 
