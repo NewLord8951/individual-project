@@ -12,22 +12,35 @@ CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 
 async def send_news(bot: Bot):
+    news_list = []
+    index = 0
+
     while True:
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get("https://www.rbc.ru/") as response:
-                    if response.status == 200:
-                        text = await response.text()
-                        soup = BeautifulSoup(text, "html.parser")
-                        news = soup.find_all("span", class_="main__feed__title-wrap")
-                        if news:
-                            new_0 = [i.text + "\n" for i in news]
-                            await bot.send_message(CHANNEL_ID, f"Новость:\n{new_0}")
-                            logger.success("Канал: новость отправлена")
+            if not news_list or index >= len(news_list):
+                async with aiohttp.ClientSession() as session:
+                    async with session.get("https://www.rbc.ru/") as response:
+                        if response.status == 200:
+                            text = await response.text()
+                            soup = BeautifulSoup(text, "html.parser")
+                            news_spans = soup.find_all("span", class_="main__feed__title-wrap")
+                            news_list = [i.text.strip() for i in news_spans if i.text.strip()]
+                            index = 0
+                            if not news_list:
+                                logger.warning("Канал: новости не найдены на странице")
+                                await asyncio.sleep(100)
+                                continue
                         else:
-                            logger.warning("Канал: новости не найдены на странице")
-                    else:
-                        logger.warning(f"Канал: проблема с сайтом новостей, статус {response.status}")
+                            logger.warning(f"Канал: проблема с сайтом новостей, статус {response.status}")
+                            await asyncio.sleep(100)
+                            continue
+
+            current_news = news_list[index]
+            await bot.send_message(CHANNEL_ID, f"Новость:\n{current_news}")
+            logger.success(f"Канал: новость отправлена ({index + 1}/{len(news_list)})")
+
+            index += 1
+
         except Exception as e:
             logger.error(f"Канал: ошибка {e}")
 
