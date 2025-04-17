@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from dotenv import find_dotenv, load_dotenv
 from private_chat import p_c
 from group_chat import group_quiz
-from channel import send_jokes_task, setup_channel_handlers
+from channel import send_news, setup_channel_handlers
 
 load_dotenv(find_dotenv())
 
@@ -18,7 +18,7 @@ async def main():
     try:
         p_c(dp)
         group_quiz(dp)
-        send_jokes_task(dp)
+        send_news(dp)
         setup_channel_handlers(dp, bot)
 
         logger.add('file.log',

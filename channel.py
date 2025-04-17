@@ -12,18 +12,18 @@ load_dotenv(find_dotenv())
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 
-async def send_jokes_task(bot: Bot):
+async def send_news(bot: Bot):
     while True:
         try:
-            response = requests.get("https://www.anekdot.ru/random/anekdot/")
+            response = requests.get("https://www.rbc.ru/")
             if response.ok:
                 soup = BeautifulSoup(response.text, 'html.parser')
-                jokes = soup.find_all('div', class_='text')
-                joke = choice(jokes).text.strip()
-                await bot.send_message(CHANNEL_ID, f"Анекдот:\n{joke}")
-                logger.success("Канал: анекдот отправлен")
+                news = soup.find_all('div', class_='main__feel__title')
+                new = choice(news).text.strip()
+                await bot.send_message(CHANNEL_ID, f"Новость:\n{new}")
+                logger.success("Канал: новость отправлена")
             else:
-                logger.warning("Канал: проблема с сайтом анекдотов")
+                logger.warning("Канал: проблема с сайтом новостей")
         except Exception as e:
             logger.error(f"Канал: ошибка {e}")
 
@@ -31,7 +31,7 @@ async def send_jokes_task(bot: Bot):
 
 
 def setup_channel_handlers(dp: Dispatcher, bot: Bot):
-    asyncio.create_task(send_jokes_task(bot))
+    asyncio.create_task(send_news(bot))
 
     @dp.message(Command('channel_stats'), F.chat.type == "channel")
     async def channel_stats(message: types.Message):
