@@ -1,8 +1,12 @@
 import random
+import re
 from aiogram import Dispatcher, types, F
 from aiogram.filters import Command, CommandStart
 from loguru import logger
+from mat import mats
 
+bad_words = mats
+sticker_id = "5407062198700755424"
 group_games = {}
 
 logger.add("file_{time}.log")
@@ -23,6 +27,11 @@ def group_quiz(dp: Dispatcher):
         chat_id = message.chat.id
         if chat_id not in group_games:
             await message.answer("Сначала /start_game")
+            return
+
+        if any(re.search(rf'\b{word}\b', message.text, re.IGNORECASE) for word in bad_words):
+            await message.answer_sticker(sticker_id)
+            await message.answer("Пожалуйста, не используйте грубые слова!")
             return
 
         try:
