@@ -31,7 +31,6 @@ def setup_group_handlers(dp: Dispatcher):
 
         if any(re.search(rf'\b{word}\b', message.text, re.IGNORECASE) for word in bad_words):
             await message.answer_sticker(sticker_id)
-            await message.answer("Пожалуйста, не используйте грубые слова!")
             logger.warning(f"Чат использует маты! {chat_id}")
             return
 
@@ -46,7 +45,7 @@ def setup_group_handlers(dp: Dispatcher):
         if guess < secret:
             await message.answer("Я загадал число больше!")
         elif guess > secret:
-            await message.answer("Я загадал число меньше!!")
+            await message.answer("Я загадал число меньше!")
         else:
             await message.answer(f"Угадал! Это {secret}")
             del group_games[chat_id]
