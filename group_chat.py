@@ -1,7 +1,7 @@
 import random
 import re
 from aiogram import Dispatcher, types, F
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import Command
 from loguru import logger
 from mat import mats
 
@@ -26,7 +26,7 @@ def setup_group_handlers(dp: Dispatcher):
     async def make_guess(message: types.Message):
         chat_id = message.chat.id
         if chat_id not in group_games:
-            await message.answer("Сначала /start_game")
+            await message.answer("Сначала /guess (число)")
             return
 
         if any(re.search(rf'\b{word}\b', message.text, re.IGNORECASE) for word in bad_words):
