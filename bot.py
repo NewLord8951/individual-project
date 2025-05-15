@@ -4,7 +4,7 @@ from loguru import logger
 from aiogram import Bot, Dispatcher
 from dotenv import find_dotenv, load_dotenv
 from private_chat import p_c
-from group_chat import setup_group_handlers
+from group_chat import setup_group_handlers, UserWarnings
 from channel import send_news, setup_channel_handlers
 
 load_dotenv(find_dotenv())
@@ -20,6 +20,7 @@ async def main():
         setup_group_handlers(dp)
         send_news(dp)
         setup_channel_handlers(dp, bot)
+        UserWarnings(dp)
 
         logger.add('file.log',
                    format='{time:YYYY-MM-DD at HH:mm:ss} | {level} |\
