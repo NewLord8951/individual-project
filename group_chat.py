@@ -5,48 +5,52 @@ from aiogram.filters import Command
 from loguru import logger
 from mat import mats
 
-bad_words = mats
-sticker_id = "5407062198700755424"
+STICKER_ID = "CAACAgIAAxkBAAEPHGZoJcDcrCtFMH4AAbcSPIzwcUP4x7cAAuBJAAJsvglLbTF7IeyHYuA2BA"
+
+
 group_games = {}
 
-logger.add("file_{time}.log")
+logger.add("debug.log", rotation="1 MB", level="DEBUG")
 
 
 def setup_group_handlers(dp: Dispatcher):
-    @dp.message(Command('start'),
-                F.chat.type.in_({"group", "supergroup"}))
+    @dp.message(Command('start'), F.chat.type.in_({"group", "supergroup"}))
     async def start_game(message: types.Message):
+        """Обработчик команды /start для начала игры"""
         chat_id = message.chat.id
         group_games[chat_id] = random.randint(1, 100)
-        await message.answer(
-            "Игра начата! Угадай число от 1 до 100 (/guess N)")
-        logger.info(f"Группа: игра в {chat_id}")
+        await message.answer("🎮 Игра начата! Попробуй угадать число от 1 до 100.\n"
+                           "Используй команду /guess <число>")
+        logger.info(f"Игра начата в чате {chat_id}")
 
     @dp.message(Command('guess'), F.chat.type.in_({"group", "supergroup"}))
     async def make_guess(message: types.Message):
+        """Обработчик команды /guess для попытки угадать число"""
         chat_id = message.chat.id
-        if chat_id not in group_games:
-            await message.answer("Сначала /guess (число)")
+
+        if any(re.search(rf'\b{re.escape(word)}\b', message.text, re.IGNORECASE) 
+               for word in mats):
+            await message.answer_sticker(STICKER_ID)
+            logger.warning(f"Обнаружены маты в чате {chat_id}")
             return
 
-        if any(re.search(rf'\b{word}\b', message.text, re.IGNORECASE) for word in bad_words):
-            await message.answer_sticker(sticker_id)
-            logger.warning(f"Чат использует маты! {chat_id}")
+        if chat_id not in group_games:
+            await message.answer("Сначала начните игру командой /start")
             return
 
         try:
             guess = int(message.text.split()[1])
         except (IndexError, ValueError):
-            await message.answer("Используйте: /guess 42")
+            await message.answer("❌ Неправильный формат. Используйте: /guess 42")
             return
 
         secret = group_games[chat_id]
 
         if guess < secret:
-            await message.answer("Я загадал число больше!")
+            await message.answer("🔺 Мое число больше!")
         elif guess > secret:
-            await message.answer("Я загадал число меньше!")
+            await message.answer("🔻 Мое число меньше!")
         else:
-            await message.answer(f"Угадал! Это {secret}")
+            await message.answer(f"🎉 Поздравляю! Ты угадал число {secret}!")
             del group_games[chat_id]
-            logger.info(f"Группа: игра завершена в {chat_id}")
+            logger.info(f"Игра завершена в чате {chat_id}")
