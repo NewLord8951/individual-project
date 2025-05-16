@@ -2,6 +2,7 @@ import os
 import asyncio
 from loguru import logger
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import find_dotenv, load_dotenv
 from private_chat import p_c
 from group_chat import setup_group_handlers, UserWarnings
@@ -9,30 +10,23 @@ from channel import send_news, setup_channel_handlers
 
 load_dotenv(find_dotenv())
 
-CHANNEL_ID = os.getenv("CHANNEL_ID")
 bot = Bot(token=os.getenv('TOKEN'))
-dp = Dispatcher()
+dp = Dispatcher(storage=MemoryStorage())
 
 
 async def main():
     try:
         p_c(dp)
         setup_group_handlers(dp)
+        UserWarnings(dp)
         send_news(dp)
         setup_channel_handlers(dp, bot)
-        UserWarnings(dp)
 
-        logger.add('file.log',
-                   format='{time:YYYY-MM-DD at HH:mm:ss} | {level} |\
-                      {message}',
-                   rotation='3 days',
-                   backtrace=True,
-                   diagnose=True)
-        logger.info('Бот запущен')
-
+        logger.add("file.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}")
+        logger.info("Бот запущен")
         await dp.start_polling(bot)
     except Exception as e:
-        logger.error(f'Ошибка при запуске бота: {e}')
+        logger.error(f"Ошибка: {e}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
