@@ -5,10 +5,10 @@ from loguru import logger
 from mat import contains_bad_words
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.redis import RedisStorage
+from aiogram.fsm.storage.memory import MemoryStorage
 
 bot = Bot(token="YOUR_BOT_TOKEN")
-storage = RedisStorage.from_url("redis://localhost:6379/0")
+storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
 
