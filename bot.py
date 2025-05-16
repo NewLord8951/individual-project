@@ -21,7 +21,7 @@ async def main():
         setup_group_handlers(dp)
         UserWarnings(dp)
         send_news(dp)
-        setup_channel_handlers(dp, bot)
+        setup_channel_handlers(dp)
         WarningSystem(dp, bot)
 
         logger.add("file.log", format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}")

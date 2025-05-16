@@ -62,7 +62,7 @@ class WarningSystem:
                 logger.warning(f"Первое предупреждение для {message.from_user.id}")
 
 
-def setup_group_handlers(dp: Dispatcher, bot: Bot):
+def setup_group_handlers(dp: Dispatcher):
     @dp.message(Command('start'), F.chat.type.in_({"group", "supergroup"}))
     async def start_game(message: types.Message):
         chat_id = message.chat.id
