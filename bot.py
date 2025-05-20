@@ -24,7 +24,7 @@ async def main():
         setup_channel_handlers(dp, bot)
         send_news(dp)
 
-        UserWarnings(dp)
+        UserWarnings()
         WarningSystem(dp, bot)
 
         logger.info("Бот запущен")
