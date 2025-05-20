@@ -21,7 +21,7 @@ async def main():
     try:
         register_private_handlers(dp)
         setup_group_handlers(dp)
-        setup_channel_handlers(dp)
+        setup_channel_handlers(dp, bot)
         send_news(dp)
 
         UserWarnings(dp)
