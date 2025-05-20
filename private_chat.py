@@ -78,7 +78,7 @@ async def send_question_4(message: types.Message):
     )
 
 
-def p_c(dp: Dispatcher):
+def register_private_handlers(dp: Dispatcher):
     @dp.message(CommandStart(), F.chat.type == "private")
     async def cmd_start(message: types.Message):
         user_states[message.from_user.id] = 0
