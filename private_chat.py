@@ -1,12 +1,14 @@
 from loguru import logger
-from aiogram import Dispatcher, types, F, Router
+from aiogram import Dispatcher, types, F, Router, Bot
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from reply import get_keyboard
+from mat import contains_bad_words
 
 router = Router()
 scores = {}
+STICKER_ID = "CAACAgIAAxkBAAEPHGZoJcDcrCtFMH4AAbcSPIzwcUP4x7cAAuBJAAJsvglLbTF7IeyHYuA2BA"
 
 
 class QuizState(StatesGroup):
@@ -17,7 +19,178 @@ class QuizState(StatesGroup):
     question_4 = State()
 
 
+class UserWarningsPrivate(StatesGroup):
+    """Класс состояний для системы предупреждений в приватном чате"""
+    no_warning = State()
+    first_warning = State()
+    second_warning = State()
+    banned = State()
+
+
+class WarningSystemPrivate:
+    def __init__(self, dp: Dispatcher, bot: Bot):
+        self.dp = dp
+        self.bot = bot
+        self.register_handlers()
+
+    def register_handlers(self):
+        @self.dp.message(F.text & F.chat.type == "private")
+        async def handle_private_messages(message: types.Message, state: FSMContext):
+            quiz_state = await state.get_state()
+            if quiz_state and quiz_state.startswith("QuizState:"):
+                return
+
+            current_warning_state = await state.get_state()
+            if current_warning_state == UserWarningsPrivate.banned.state:
+                await message.answer("⛔ Вы заблокированы и не можете использовать бота")
+                return
+
+            if contains_bad_words(message.text.lower()):
+                if current_warning_state == UserWarningsPrivate.first_warning.state:
+                    await state.set_state(UserWarningsPrivate.second_warning)
+                    await message.answer_sticker(STICKER_ID)
+                    await message.answer("🚨 Последнее предупреждение! Следующее нарушение приведет к блокировке.")
+                    logger.warning(f"Пользователь {message.from_user.id} получил второе предупреждение")
+
+                elif current_warning_state == UserWarningsPrivate.second_warning.state:
+                    await state.set_state(UserWarningsPrivate.banned)
+                    await message.answer_sticker(STICKER_ID)
+                    await message.answer("⛔ Вы заблокированы за нарушение правил!")
+                    logger.error(f"Пользователь {message.from_user.id} заблокирован")  
+
+                else:
+                    await state.set_state(UserWarningsPrivate.first_warning)
+                    await message.answer_sticker(STICKER_ID)
+                    await message.answer("⚠️ Первое предупреждение! Пожалуйста, соблюдайте правила общения.")
+                    logger.warning(f"Пользователь {message.from_user.id} получил первое предупреждение")
+
+
+def register_private_handlers(dp: Dispatcher, bot: Bot):
+    dp.include_router(router)
+
+    WarningSystemPrivate(dp, bot)
+
+    @router.message(CommandStart(), F.chat.type == "private")
+    async def cmd_start(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+
+        if current_state == UserWarningsPrivate.banned.state:
+            await message.answer("⛔ Вы заблокированы и не можете использовать бота")
+            return
+
+        scores[message.from_user.id] = 0
+        await state.set_state(UserWarningsPrivate.no_warning)
+        await message.answer('Добро пожаловать! Начнем викторину.')
+        logger.info(f'Пользователь {message.from_user.id} начал викторину')
+        await send_question_0(message, state)
+
+    @router.message(QuizState.question_0, F.chat.type == "private")
+    async def handle_answer_0(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            return
+
+        user_id = message.from_user.id
+
+        if message.text in ["a0", "b0", "c0", "d0"]:
+            await message.answer('Спасибо за ответ!')
+            logger.info(f'Пользователь {user_id} ответил на вопрос 0')
+            await send_question_1(message, state)
+            if message.text == "c0":
+                scores[user_id] += 1
+                logger.info(f'Пользователь {user_id} дал правильный ответ')
+        else:
+            await message.answer("Пожалуйста, используйте кнопки для ответа")
+
+    @router.message(QuizState.question_1, F.chat.type == "private")
+    async def handle_answer_1(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            return
+
+        user_id = message.from_user.id
+
+        if message.text in ["a1", "b1", "c1", "d1"]:
+            await message.answer('Ответ принят!')
+            logger.info(f'Пользователь {user_id} ответил на вопрос 1')
+            await send_question_2(message, state)
+            if message.text == "a1":
+                scores[user_id] += 1
+                logger.info(f'Пользователь {user_id} дал правильный ответ')
+        else:
+            await message.answer("Пожалуйста, используйте кнопки для ответа")
+
+    @router.message(QuizState.question_2, F.chat.type == "private")
+    async def handle_answer_2(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            return
+
+        user_id = message.from_user.id
+
+        if message.text in ["a2", "b2", "c2", "d2"]:
+            await message.answer('Отлично! Продолжаем.')
+            logger.info(f'Пользователь {user_id} ответил на вопрос 2')
+            await send_question_3(message, state)
+            if message.text == "a2":
+                scores[user_id] += 1
+                logger.info(f'Пользователь {user_id} дал правильный ответ')
+        else:
+            await message.answer("Пожалуйста, используйте кнопки для ответа")
+
+    @router.message(QuizState.question_3, F.chat.type == "private")
+    async def handle_answer_3(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            return
+
+        user_id = message.from_user.id
+
+        if message.text in ["a3", "b3", "c3", "d3"]:
+            await message.answer('Хороший ответ!')
+            logger.info(f'Пользователь {user_id} ответил на вопрос 3')
+            await send_question_4(message, state)
+            if message.text == "b3":
+                scores[user_id] += 1
+                logger.info(f'Пользователь {user_id} дал правильный ответ')
+        else:
+            await message.answer("Пожалуйста, используйте кнопки для ответа")
+
+    @router.message(QuizState.question_4, F.chat.type == "private")
+    async def handle_answer_4(message: types.Message, state: FSMContext):
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            return
+
+        user_id = message.from_user.id
+
+        if message.text in ["a4", "b4", "c4", "d4"]:
+            await message.answer('Спасибо за участие!')
+            logger.info(f'Пользователь {user_id} ответил на вопрос 4')
+            if message.text == "d4":
+                scores[user_id] += 1
+                logger.info(f'Пользователь {user_id} дал правильный ответ')
+
+            result = {
+                1: "20%",
+                2: "40%",
+                3: "60%",
+                4: "80%",
+                5: "100%"
+            }.get(scores[user_id], "0%")
+
+            await message.answer(f"🎉 Ваш результат: {result} правильных ответов!")
+            await state.set_state(UserWarningsPrivate.no_warning)
+        else:
+            await message.answer("Пожалуйста, используйте кнопки для ответа")
+
+
 async def send_question_0(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state == UserWarningsPrivate.banned.state:
+        await message.answer("⛔ Вы заблокированы и не можете участвовать в викторине")
+        return
+
     await state.set_state(QuizState.question_0)
     await message.answer(
         "Первый вопрос: блблблблб?",
@@ -26,7 +199,7 @@ async def send_question_0(message: types.Message, state: FSMContext):
             "b0",
             "c0",
             "d0",
-            placeholder="",
+            placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
     )
@@ -41,7 +214,7 @@ async def send_question_1(message: types.Message, state: FSMContext):
             "b1",
             "c1",
             "d1",
-            placeholder="",
+            placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
     )
@@ -56,7 +229,7 @@ async def send_question_2(message: types.Message, state: FSMContext):
             "b2",
             "c2",
             "d2",
-            placeholder="",
+            placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
     )
@@ -71,7 +244,7 @@ async def send_question_3(message: types.Message, state: FSMContext):
             "b3",
             "c3",
             "d3",
-            placeholder="",
+            placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
     )
@@ -86,96 +259,7 @@ async def send_question_4(message: types.Message, state: FSMContext):
             "b4",
             "c4",
             "d4",
-            placeholder="",
+            placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
     )
-
-
-def register_private_handlers(dp: Dispatcher):
-    dp.include_router(router)
-
-    @router.message(CommandStart(), F.chat.type == "private")
-    async def cmd_start(message: types.Message, state: FSMContext):
-        scores[message.from_user.id] = 0
-        await message.answer('Здравствуйте! Бот запущен.')
-        logger.info('Бот запущен')
-        await send_question_0(message, state)
-
-    @router.message(QuizState.question_0, F.chat.type == "private")
-    async def handle_answer_0(message: types.Message, state: FSMContext):
-        user_id = message.from_user.id
-
-        if message.text in ["a0", "b0", "c0", "d0"]:
-            await message.answer('ага')
-            logger.info('Вопрос 1 написан')
-            await send_question_1(message, state)
-            if message.text == "c0":
-                scores[user_id] += 1
-        else:
-            await message.answer("Что это??? Символы???")
-
-    @router.message(QuizState.question_1, F.chat.type == "private")
-    async def handle_answer_1(message: types.Message, state: FSMContext):
-        user_id = message.from_user.id
-
-        if message.text in ["a1", "b1", "c1", "d1"]:
-            await message.answer('ага ясно')
-            logger.info('Вопрос 2 написан')
-            await send_question_2(message, state)
-            if message.text == "a1":
-                scores[user_id] += 1
-        else:
-            await message.answer("Что это??? Символы???")
-
-    @router.message(QuizState.question_2, F.chat.type == "private")
-    async def handle_answer_2(message: types.Message, state: FSMContext):
-        user_id = message.from_user.id
-
-        if message.text in ["a2", "b2", "c2", "d2"]:
-            await message.answer('агась')
-            logger.info('Вопрос 3 написан')
-            await send_question_3(message, state)
-            if message.text == "a2":
-                scores[user_id] += 1
-        else:
-            await message.answer("Что это??? Символы???")
-
-    @router.message(QuizState.question_3, F.chat.type == "private")
-    async def handle_answer_3(message: types.Message, state: FSMContext):
-        user_id = message.from_user.id
-
-        if message.text in ["a3", "b3", "c3", "d3"]:
-            await message.answer('да ну')
-            logger.info('Вопрос 4 написан')
-            await send_question_4(message, state)
-            if message.text == "b3":
-                scores[user_id] += 1
-        else:
-            await message.answer("Что это??? Символы???")
-
-    @router.message(QuizState.question_4, F.chat.type == "private")
-    async def handle_answer_4(message: types.Message, state: FSMContext):
-        user_id = message.from_user.id
-
-        if message.text in ["a4", "b4", "c4", "d4"]:
-            await message.answer('пупупу')
-            logger.info('Вопрос 5 написан')
-            if message.text == "d4":
-                scores[user_id] += 1
-
-            if scores[user_id] == 1:
-                a = "20%"
-            elif scores[user_id] == 2:
-                a = "40%"
-            elif scores[user_id] == 3:
-                a = "60%"
-            elif scores[user_id] == 4:
-                a = "80%"
-            elif scores[user_id] == 5:
-                a = "100%"
-
-            await message.answer(f"Вы ответили правильно на: {a}")
-            await state.clear()
-        else:
-            await message.answer("Что это??? Символы???")
