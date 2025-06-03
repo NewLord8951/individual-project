@@ -1,6 +1,6 @@
 from loguru import logger
 from aiogram import Dispatcher, types, F, Router, Bot
-from aiogram.filters import CommandStart
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from reply import get_keyboard
@@ -68,14 +68,17 @@ class WarningSystemPrivate:
 def register_private_handlers(dp: Dispatcher, bot: Bot):
     dp.include_router(router)
 
-    WarningSystemPrivate(dp, bot)
-
-    @router.message(CommandStart(), F.chat.type == "private")
-    async def cmd_start(message: types.Message, state: FSMContext):
+    async def check_banned(message: types.Message, state: FSMContext) -> bool:
+        """Проверяет, забанен ли пользователь"""
         current_state = await state.get_state()
-
         if current_state == UserWarningsPrivate.banned.state:
             await message.answer("⛔ Вы заблокированы и не можете использовать бота")
+            return True
+        return False
+
+    @router.message(Command('start'), F.chat.type == "private")
+    async def cmd_start(message: types.Message, state: FSMContext):
+        if await check_banned(message, state):
             return
 
         scores[message.from_user.id] = 0
