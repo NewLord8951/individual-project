@@ -33,6 +33,14 @@ class WarningSystemPrivate:
         self.bot = bot
         self.register_handlers()
 
+    async def check_banned(self, message: types.Message, state: FSMContext) -> bool:
+        """Проверяет, забанен ли пользователь"""
+        current_state = await state.get_state()
+        if current_state == UserWarningsPrivate.banned.state:
+            await message.answer("⛔ Вы заблокированы и не можете использовать бота")
+            return True
+        return False
+
     def register_handlers(self):
         @self.dp.message(F.text & F.chat.type == "private")
         async def handle_private_messages(message: types.Message, state: FSMContext):
@@ -66,19 +74,12 @@ class WarningSystemPrivate:
 
 
 def register_private_handlers(dp: Dispatcher, bot: Bot):
+    warning_system = WarningSystemPrivate(dp, bot)
     dp.include_router(router)
-
-    async def check_banned(message: types.Message, state: FSMContext) -> bool:
-        """Проверяет, забанен ли пользователь"""
-        current_state = await state.get_state()
-        if current_state == UserWarningsPrivate.banned.state:
-            await message.answer("⛔ Вы заблокированы и не можете использовать бота")
-            return True
-        return False
 
     @router.message(Command('start'), F.chat.type == "private")
     async def cmd_start(message: types.Message, state: FSMContext):
-        if await check_banned(message, state):
+        if await warning_system.check_banned(message, state):
             return
 
         scores[message.from_user.id] = 0
