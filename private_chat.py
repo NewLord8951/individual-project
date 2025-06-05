@@ -28,8 +28,8 @@ class UserWarningsPrivate(StatesGroup):
 
 
 class WarningSystemPrivate:
-    def __init__(self, dp: Dispatcher, bot: Bot):
-        self.dp = dp
+    def __init__(self, router: Router, bot: Bot):
+        self.router = router
         self.bot = bot
         self.register_handlers()
 
@@ -42,7 +42,7 @@ class WarningSystemPrivate:
         return False
 
     def register_handlers(self):
-        @self.dp.message(F.text & F.chat.type == "private")
+        @self.router.message(F.text & F.chat.type == "private")
         async def handle_private_messages(message: types.Message, state: FSMContext):
             quiz_state = await state.get_state()
             if quiz_state and quiz_state.startswith("QuizState:"):
@@ -74,10 +74,10 @@ class WarningSystemPrivate:
 
 
 def register_private_handlers(dp: Dispatcher, bot: Bot):
-    warning_system = WarningSystemPrivate(dp, bot)
+    warning_system = WarningSystemPrivate(router, bot)
     dp.include_router(router)
 
-    @router.message(Command('start'), F.chat.type == "private")
+    @router.message(Command('start'), F.chat.type.in_("private"))
     async def cmd_start(message: types.Message, state: FSMContext):
         if await warning_system.check_banned(message, state):
             return
@@ -88,7 +88,7 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
         logger.info(f'Пользователь {message.from_user.id} начал викторину')
         await send_question_0(message, state)
 
-    @router.message(QuizState.question_0, F.chat.type == "private")
+    @router.message(QuizState.question_0, F.chat.type.in_("private"))
     async def handle_answer_0(message: types.Message, state: FSMContext):
         current_state = await state.get_state()
         if current_state == UserWarningsPrivate.banned.state:
