@@ -95,11 +95,11 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
 
         user_id = message.from_user.id
 
-        if message.text in ["a0", "b0", "c0", "d0"]:
+        if message.text in ["Гилигили", "Галигали", "Гулигули", "Ватча"]:
             await message.answer('Спасибо за ответ!')
             logger.info(f'Пользователь {user_id} ответил на вопрос 0')
             await send_question_1(message, state)
-            if message.text == "c0":
+            if message.text == "Гулигули":
                 scores[user_id] += 1
                 logger.info(f'Пользователь {user_id} дал правильный ответ')
         else:
@@ -113,11 +113,11 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
 
         user_id = message.from_user.id
 
-        if message.text in ["a1", "b1", "c1", "d1"]:
+        if message.text in ["Патапим", "Питипим", "Путипум", "Что-то там"]:
             await message.answer('Ответ принят!')
             logger.info(f'Пользователь {user_id} ответил на вопрос 1')
             await send_question_2(message, state)
-            if message.text == "a1":
+            if message.text == "Патапим":
                 scores[user_id] += 1
                 logger.info(f'Пользователь {user_id} дал правильный ответ')
         else:
@@ -131,11 +131,11 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
 
         user_id = message.from_user.id
 
-        if message.text in ["a2", "b2", "c2", "d2"]:
+        if message.text in ["Испугался?", "Страшно?", "АААААА", "Что ты делааешь в подвале?"]:
             await message.answer('Отлично! Продолжаем.')
             logger.info(f'Пользователь {user_id} ответил на вопрос 2')
             await send_question_3(message, state)
-            if message.text == "a2":
+            if message.text == "Испугался?":
                 scores[user_id] += 1
                 logger.info(f'Пользователь {user_id} дал правильный ответ')
         else:
@@ -149,11 +149,11 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
 
         user_id = message.from_user.id
 
-        if message.text in ["a3", "b3", "c3", "d3"]:
+        if message.text in ["Щука", "Ясь", "Акула", "Орёл"]:
             await message.answer('Хороший ответ!')
             logger.info(f'Пользователь {user_id} ответил на вопрос 3')
             await send_question_4(message, state)
-            if message.text == "b3":
+            if message.text == "Ясь":
                 scores[user_id] += 1
                 logger.info(f'Пользователь {user_id} дал правильный ответ')
         else:
@@ -167,10 +167,10 @@ def register_private_handlers(dp: Dispatcher, bot: Bot):
 
         user_id = message.from_user.id
 
-        if message.text in ["a4", "b4", "c4", "d4"]:
+        if message.text in ["Нет!", "Отвратительно!", "Нет, конечно", "Да!!!"]:
             await message.answer('Спасибо за участие!')
             logger.info(f'Пользователь {user_id} ответил на вопрос 4')
-            if message.text == "d4":
+            if message.text == "Да!!!":
                 scores[user_id] += 1
                 logger.info(f'Пользователь {user_id} дал правильный ответ')
 
@@ -196,12 +196,12 @@ async def send_question_0(message: types.Message, state: FSMContext):
 
     await state.set_state(QuizState.question_0)
     await message.answer(
-        "Первый вопрос: блблблблб?",
+        "Первый вопрос: Продолжите: Линган...?",
         reply_markup=get_keyboard(
-            "a0",
-            "b0",
-            "c0",
-            "d0",
+            "Гилигили",
+            "Галигали",
+            "Гулигули",
+            "Ватча",
             placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
@@ -211,12 +211,12 @@ async def send_question_0(message: types.Message, state: FSMContext):
 async def send_question_1(message: types.Message, state: FSMContext):
     await state.set_state(QuizState.question_1)
     await message.answer(
-        "Следующий вопрос гугугага?",
+        "Следующий вопрос Продолжите: Брбр...?",
         reply_markup=get_keyboard(
-            "a1",
-            "b1",
-            "c1",
-            "d1",
+            "Патапим",
+            "Питипим",
+            "Путипум",
+            "Что-то там",
             placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
@@ -226,12 +226,12 @@ async def send_question_1(message: types.Message, state: FSMContext):
 async def send_question_2(message: types.Message, state: FSMContext):
     await state.set_state(QuizState.question_2)
     await message.answer(
-        "Следующий вопрос дадада??",
+        "Следующий вопрос Продолжите: Бу...??",
         reply_markup=get_keyboard(
-            "a2",
-            "b2",
-            "c2",
-            "d2",
+            "Испугался?",
+            "Страшно?",
+            "АААААА",
+            "Что ты делааешь в подвале?",
             placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
@@ -241,12 +241,12 @@ async def send_question_2(message: types.Message, state: FSMContext):
 async def send_question_3(message: types.Message, state: FSMContext):
     await state.set_state(QuizState.question_3)
     await message.answer(
-        "Следующий вопрос лингангу??",
+        "Следующий вопрос Продолжите: Рыба моей мечты...??",
         reply_markup=get_keyboard(
-            "a3",
-            "b3",
-            "c3",
-            "d3",
+            "Щука",
+            "Ясь",
+            "Акула",
+            "Орёл",
             placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
@@ -256,12 +256,12 @@ async def send_question_3(message: types.Message, state: FSMContext):
 async def send_question_4(message: types.Message, state: FSMContext):
     await state.set_state(QuizState.question_4)
     await message.answer(
-        "Следующий вопрос гулигули??",
+        "Следующий вопрос Вам понравилось?",
         reply_markup=get_keyboard(
-            "a4",
-            "b4",
-            "c4",
-            "d4",
+            "Нет!",
+            "Отвратительно!",
+            "Нет, конечно",
+            "Да!!!",
             placeholder="Выберите ответ:",
             sizes=(2, 2)
         ),
